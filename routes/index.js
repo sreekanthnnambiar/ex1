@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', function(req, res, next) {	
 
   var job_title=req.body.title;
 
@@ -55,7 +55,7 @@ var client = new cassandra.Client({contactPoints: ['127.0.0.1:9042'], keyspace: 
 
 		var id=cassandra.types.uuid();
 
-		client.execute("insert into demo.company2(id,job_title,company_name,job_location)values(?,?,?,?)",[id,company.jobTitle,company.name,company.jobLocation], function (err, result) {
+		client.execute("insert into demo.company2(id,job_title,company_name,job_location,state,city)values(?,?,?,?,?,?)",[id,company.jobTitle,company.name,company.jobLocation,company.state,company.city], function (err, result) {
            if (!err){
                console.log("details added");
            }
@@ -76,6 +76,26 @@ var client = new cassandra.Client({contactPoints: ['127.0.0.1:9042'], keyspace: 
 			company.name= $(this).find('.company').text().trim();
 			company.jobTitle= $(this).find('.jobtitle').text().trim();
 			company.jobLocation=$(this).find('.location').text().trim();
+			var locationName=company.jobLocation=$(this).find('.location').text().trim();
+        	var locationSplit=locationName.split(',');
+        	if(locationSplit[1])
+        	{
+        	 	var stateFull=locationSplit[1].split(' ');
+         		if(stateFull[1])
+         		{
+           			var state=stateFull[1];
+					company.state=state;
+         		}
+				if(locationSplit[0])
+				{
+					var city=locationSplit[0];
+					company.city=city;
+				}
+			
+        	}
+			
+
+
 			companies.push(company);// datas are entered to companies[]
 			createCompany(company);
 			console.log(company);// displays all company names and job titles 
